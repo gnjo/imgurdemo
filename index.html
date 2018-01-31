@@ -1,5 +1,100 @@
-<head>
-</head>
-<body>
- <p>demoning</p>
-</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+<script src="//gnjo.github.io/use.js"></script>
+
+<div id="x">
+</div> 
+<script>
+
+var x =document.getElementById('x');
+  x.ondragover =handleDragOver;
+  x.ondrop=handleFileSelect;
+
+
+  function handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+   evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }
+  
+
+function handleFileSelect(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+   
+   //both ondrop and input type=file
+   var files = evt.target.files||evt.dataTransfer.files;
+
+    // Loop through the FileList and render image files as thumbnails.
+    ;[].slice.call(files).filter(f=>f.type.match('image.*')).map((f)=>{ 
+      // Only process image files.
+     
+      let reader = new FileReader()
+      ,caller = function(e) {
+          let data = e.target.result;
+          testup(data)
+          //uploadImageToImgur(data)
+          ;
+        }
+      ;
+      reader.onloadend=caller;
+      reader.readAsDataURL(f);
+     });
+     
+    }   
+
+
+var testup =function(blob){
+ var c ='c552bf3081f0790'
+ $.ajax({ 
+    url: 'https://api.imgur.com/3/image',
+    headers: {
+        'Authorization': 'Client-ID c552bf3081f0790'
+    },
+    type: 'POST',
+    data: {
+        'image': blob
+    },
+    success: function() { console.log('cool'); }
+ });
+}
+ 
+ 
+
+var uploadImageToImgur = function (blob) {
+ let str ='c552bf3081f07909342764f2b742548881bf5e252c8a0461fb7b9d5'
+ ,c = str.slice(0,15)
+ ,t = str.slice(15)
+ ,flg = 'jquery'
+ ;
+ console.log(blob)
+ let formData ={
+  'image' : blob
+  //,'type' : blob.type
+  //,'album':'xxx'
+  //,'name' :''
+  //,'description' : fn.now()
+ }
+ ;
+ 
+ if(flg==='jquery'){
+  let o={ contentType: false
+         ,data: formData
+         ,headers: {Authorization: `Client-ID ${c}`}
+         ,processData: false
+         ,type: 'POST'
+         ,url: 'https://api.imgur.com/3/image'
+        }
+  ;
+  return $.ajax(o)
+ }else{
+  let url='https://api.imgur.com/3/image'
+  ,o ={ method: 'POST'
+      , mode: 'cors'
+      , headers: { Authorization: `Client-ID ${c}`}
+      , body :formData
+      }
+  ;
+  return fetch(url,o)
+ }
+}; 
+</script> 
