@@ -32,7 +32,11 @@ function handleFileSelect(evt) {
    var files = evt.target.files||evt.dataTransfer.files;
 
     // Loop through the FileList and render image files as thumbnails.
-    ;[].slice.call(files).filter(f=>f.type.match('image.*')).map((f)=>{ 
+   var limit =5;
+    ;[].slice.call(files)
+     .filter(f=>f.type.match('image.*'))
+     .slice(0,limit)
+     .map((f)=>{ 
       // Only process image files.
      
       let reader = new FileReader()
@@ -58,7 +62,7 @@ function handleFileSelect(evt) {
 
 
 var upImgur =function(base64){
- 
+ //base64 is data:image/jpeg...,....
  let blob = fn.toBlob(base64)
  ,c ='c552bf3081f0790'
  ,formData = new FormData()
