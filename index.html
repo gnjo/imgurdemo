@@ -7,9 +7,10 @@
  #x{display:flex;flex-direction:row;flex-wrap:wrap}
  img{height:100px;width:auto}
  #lo{display:none}
+ img:hover{cursor:pointer}
 </style>
 <img id="lo" src='https://i.imgur.com/GZVONgO.gif'></img>
-<div id="x">
+<div id="x"><label>img click is copy.</label>
 </div>
 
 <script>
@@ -51,6 +52,7 @@ function handleFileSelect(evt) {
           upImgur(data)
            .then((d)=>{
              img.src =d.data.link;
+             img.onclick =function(){fn.copy(this.src)}           
              ary.push(d.data.link);
              datasave(ary);
           });
@@ -72,6 +74,8 @@ var ary = lh.load('link')||[];
    img.id ='';
    fn.g('x').appendChild(img);
    img.src=d;
+   img.onclick =function(){fn.copy(this.src)}
+  
  })
 function datasave(ary){lh.save('link',ary)}
 
