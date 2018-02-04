@@ -1,0 +1,98 @@
+<script src="https://gnjo.github.io/md5.min.js"></script>
+<script src="https://gnjo.github.io/lohash.js"></script>
+<script src="//gnjo.github.io/use.js"></script>
+<style>
+ body{margin:0;width:100vw;height:100vh;}
+ #x{width:100%;height:100%;background-color:orange}
+ #x{display:flex;flex-direction:row;flex-wrap:wrap}
+ img{height:100px;width:auto}
+ #lo{display:none}
+</style>
+<img id="lo" src='https://i.imgur.com/GZVONgO.gif'></img>
+<div id="x">
+</div>
+
+<script>
+
+var x =document.getElementById('x');
+  x.ondragover =handleDragOver;
+  x.ondrop=handleFileSelect;
+
+
+  function handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+   evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }
+  
+
+function handleFileSelect(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+   
+   //both ondrop and input type=file
+   var files = evt.target.files||evt.dataTransfer.files;
+
+    // Loop through the FileList and render image files as thumbnails.
+   var limit =5;
+    ;[].slice.call(files)
+     .filter(f=>f.type.match('image.*'))
+     .slice(0,limit)
+     .map((f)=>{ 
+      // Only process image files.
+     
+      let reader = new FileReader()
+      ,caller = function(e) {
+          let data = e.target.result
+          ,img =fn.g('lo').cloneNode(true)
+          ;
+          img.id ='';
+          fn.g('x').appendChild(img);
+          upImgur(data)
+           .then((d)=>{
+             img.src =d.data.link;
+             ary.push(d.data.link);
+             datasave(ary);
+          });
+          //uploadImageToImgur(data)
+          ;
+        }
+      ;
+      reader.onloadend=caller;
+      reader.readAsDataURL(f);
+     });
+     
+    }   
+
+var lh =lohash();
+var ary = lh.load('link')||[];
+ ary.forEach((d)=>{
+   let img =fn.g('lo').cloneNode(true)
+   ;
+   img.id ='';
+   fn.g('x').appendChild(img);
+   img.src=d;
+ })
+function datasave(ary){lh.save('link',ary)}
+
+var upImgur =function(base64){
+ //base64 is data:image/jpeg...,....
+ let blob = fn.toBlob(base64)
+ ,c ='c552bf3081f0790'
+ ,formData = new FormData()
+  formData.append('type', 'file')
+  formData.append('image', blob)
+
+  return fetch('https://api.imgur.com/3/upload.json', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Client-ID ${c}` // imgur specific
+    },
+    body: formData
+  })
+   .then(d=>d.json())
+}
+ 
+
+</script> 
