@@ -108,7 +108,8 @@
  ;/*case by superagent
  let req =root.superagent
  ;
- function upImgur(base64,cid){
+ fn.upImgur=function(base64,cid){
+  console.log('superagent')
   //base64 is data:image/jpeg...,....
   let blob = fn.toBlob(base64)
   ,c =cid
