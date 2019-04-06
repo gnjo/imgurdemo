@@ -18,7 +18,32 @@ body{width:100vw;height:100vh;margin:0}
     height:100%;
     overflow:auto;
     box-sizing: border-box;
-}   
+}
+body *{box-sizing:border-box}
+body{background-color:#222;
+ color:#098;
+ width:100vw;height:100vh;
+ display:flex;
+ margin:0;padding:0;
+ overflow:hidden;
+}
+body>div{
+ overflow:auto;
+}
+[data-imgur]{
+ display:flex;
+ flex-direction:row;
+ flex-wrap:wrap;
+ width:100%;height:100%;
+}
+[data-imgur]>img {
+ height: 200px;
+ width: 300px;
+ cursor: pointer;
+ object-fit: cover;
+ flex-grow:1;
+}
+  
  </style> 
  <script src="//gnjo.github.io/imgurdemo/imgurboard.js"></script>
 </div>
