@@ -97,7 +97,7 @@
  ,im=((base64)=>fn.upImgur(base64,cid))
  ,stock=((type,data)=>fn.stock(cid,type,data))
  ,deletecaller=(d)=>{
-  let da=$box.qa('img').map(el=>el.src)
+  let da=fn.qa('img',$box).map(el=>el.src)
   stock('allsave',da)
  }
  ;
