@@ -66,9 +66,10 @@
   ,si=(d)=>{return localStorage.setItem(key, JSON.stringify(d)) }
   ;
   if(type==='save'){let a =gi(); a.push(data); return si(a)}
+  else if(type==='allsave'){ return si(data) }
   else{return gi()} 
  }
- fn.deleteMe=function(el){
+ fn.deleteMe=function(el,caller){
   let is={}; 
   is.element=function(o){return !!(o && o.nodeType === 1)}
   ;
@@ -79,7 +80,10 @@
   el.setAttribute('tabindex','-1') //interactive-able
   el.style.outline='none'
   el.onkeydown=(e)=>{
-   if(e.which===46) e.target.remove();//46 delete
+   if(e.which===46){
+    e.target.remove();//46 delete
+    caller(e)
+   }
   }
   return el;
  }  
@@ -91,13 +95,17 @@
  ,loading=$box.getAttribute('data-imgur-loading')
  ,im=((base64)=>fn.upImgur(base64,cid))
  ,stock=((type,data)=>fn.stock(cid,type,data))
+ ,deletecaller=(d)=>{
+  let da=$box.qa('img').map(el=>el.src)
+  stock('allsave',da)
+ }
  ;
  ;//double load check
  if($box.getAttribute('data-imgur-active')) return console.log('double loading')
  ;
  ;['ondragover','ondrop','ondragleave'].forEach(d=>$box[d]=dnd)
  stock('load')
-  .map( d=>fn.deleteMe(fn.img(d)) )
+  .map( d=>fn.deleteMe(fn.img(d),deletecaller) )
   .forEach(d=>$box.appendChild(d))
  ;
  $box.setAttribute('data-imgur-active','true');
@@ -126,7 +134,7 @@
    img.src =d.data.link; stock('save',img.src);return img.src
   }
   ;
-  fn.deleteMe(img);/// 
+  fn.deleteMe(img,deletecaller);/// 
   $box.appendChild(img);
   imgc(data).fit({w:300})
    .then(im).then(calc)
