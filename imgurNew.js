@@ -13,6 +13,7 @@
  let fn={}
  ;
  fn.q=(d=>document.querySelector(d))
+ fn.qa=((d,doc=document)=>[].slice.call(doc.querySelectorAll(d))) 
  fn.ce=(d=>document.createElement(d))
  fn.copy=function(text){
   //console.log(text)
