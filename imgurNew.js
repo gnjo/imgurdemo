@@ -42,6 +42,61 @@
   ;
   return blob;
  }
+ 
+fn.dragger=(el,caller)=>{
+
+ var dnd=(caller=>function(ev){
+  let type=ev.type,mark ='drag'  //mark is .drag the custom class
+  ;
+  if(type!='paste'){
+   ev.stopPropagation();
+   ev.preventDefault();
+  }
+  if(type==='drop'||type==='paste'){
+   //this paste hack, allow the chrome only.
+   const flg= (type==='paste')
+   ,files=(flg)?ev.clipboardData.items:ev.target.files||ev.dataTransfer.files
+   ;
+   ;[].slice.call(files)
+   //.filter(f=>f.type.match('*.*')) 
+   //.slice(0,10) //10 is limit
+    .map((f)=>{
+    let r=new FileReader(); 
+    r.onloadend=(function(f){return function(ev){
+     ev.target.file=f/**/ ;
+     caller(ev)
+    };
+                            })(f);
+
+    if(flg&&f.kind ==='string'){
+     var _f=JSON.parse(JSON.stringify({kind:f.kind,type:f.type}))
+     return f.getAsString(function(str) {
+      ev.target.result=str; ev.target.file=_f; caller(ev);
+     });
+    }    
+    r.readAsDataURL((flg)?f.getAsFile():f); 
+   })
+   ;
+   this.classList.remove(mark)
+   return;
+  }     
+  if(type==='dragover'){ this.classList.add(mark);ev.dataTransfer.dropEffect = 'copy';return}
+  if(type==='dragleave'){ this.classList.remove(mark);return}
+ })
+
+ var _dnd=dnd(caller)
+ ;['onpaste','ondragover','ondrop','ondragleave'].forEach(d=>el[d]=_dnd)
+ return el; 
+ /*usage
+document.body.set({'contenteditable':'plaintext-only'})
+fn.dragger(document.body,(ev)=>{
+ console.log(ev,ev.target.result,ev.target.file)
+}) 
+ */
+
+} 
+ 
+ 
  fn.upImgur=function(base64,cid){
   //console.log(base64)
   //base64 is data:image/jpeg...,....
@@ -107,31 +162,21 @@
  ;//double load check
  if($box.getAttribute('data-imgur-active')) return console.log('double loading')
  ;
- ;['onpaste','ondragover','ondrop','ondragleave'].forEach(d=>$box[d]=dnd)
+ fn.dragger($box,caller) 
+
+ ;
  stock('load')
   .map( d=>fn.deleteMe(fn.img(d),deletecaller) )
   .forEach(d=>$box.appendChild(d))
  ;
  $box.setAttribute('data-imgur-active','true');
  ;
- function dnd(ev){
-  let type=ev.type,mark ='drag'  //mark is .drag the custom class
-  ;
-  ev.stopPropagation();
-  ev.preventDefault();
-  if(type==='drop'){
-   ;[].slice.call( ev.target.files||ev.dataTransfer.files )
-    .filter(f=>f.type.match('image.*'))
-    .map((f)=>{ let r=new FileReader();  r.onloadend=caller;  r.readAsDataURL(f)})
-   ;
-   this.classList.remove(mark)
-   return;
-  }   
-  if(type==='dragover'){ this.classList.add(mark);ev.dataTransfer.dropEffect = 'copy';return}
-  if(type==='dragleave'){ this.classList.remove(mark);return}
- }
- ;
  function caller(e){
+  let imghead='data:image'
+  ,cnk=e.target.result.slice(0,imghead.length)
+  ;
+  if(!cnk===imghead) return console.log('not image')
+  
   let data = e.target.result
   ,img = fn.img(loading) 
   ,calc=(d)=>{
@@ -145,26 +190,5 @@
   ;
  }
  ;
- ;/*case by superagent
- let req =root.superagent
- ;
- fn.upImgur=function(base64,cid){
-  console.log('superagent')
-  //base64 is data:image/jpeg...,....
-  let blob = fn.toBlob(base64)
-  ,c =cid
-  ,formData = new FormData()
-  ;
-   formData.append('type', 'file')
-   formData.append('image', blob)
-
-   return req.post('https://api.imgur.com/3/upload.json')
-    .set({ Accept: 'application/json', Authorization: `Client-ID ${c}`})
-    .send(formData)
-    .then(res=>res.body)
- }
- ;
- */
  ;
 })(this);
-
