@@ -1,5 +1,8 @@
 (function(root){
- 'use strict'
+ /*history
+ 'onpaste',
+ */
+ 'use strict';
  let document =root.document
  ,FormData =root.FormData
  ,fetch =root.fetch
@@ -104,7 +107,7 @@
  ;//double load check
  if($box.getAttribute('data-imgur-active')) return console.log('double loading')
  ;
- ;['ondragover','ondrop','ondragleave'].forEach(d=>$box[d]=dnd)
+ ;['onpaste','ondragover','ondrop','ondragleave'].forEach(d=>$box[d]=dnd)
  stock('load')
   .map( d=>fn.deleteMe(fn.img(d),deletecaller) )
   .forEach(d=>$box.appendChild(d))
